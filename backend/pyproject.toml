@@ -1,0 +1,15 @@
+[project]
+name = "novostroyki-api"
+version = "0.1.0"
+description = "FastAPI service for residential complex search and Excel import"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi==0.115.12",
+    "uvicorn==0.34.2",
+    "sqlalchemy==2.0.40",
+    "psycopg[binary]==3.2.6",
+    "openpyxl==3.1.5",
+]
+
+[tool.uv]
+package = false

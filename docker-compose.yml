@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: novostroyki
+      POSTGRES_USER: novostroyki
+      POSTGRES_PASSWORD: novostroyki
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novostroyki"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://novostroyki:novostroyki@db:5432/novostroyki
+    volumes:
+      - ./Novostroyki_15_fin.xlsx:/data/Novostroyki_15_fin.xlsx:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "python -m app.import_excel /data/Novostroyki_15_fin.xlsx && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
